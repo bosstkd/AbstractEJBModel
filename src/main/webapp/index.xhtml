@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+    
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form id="form" >
+            
+            <p:panelGrid columns="2" id="toPost">
+                
+                <p:outputLabel value="id" for="id" />
+                <p:inputText value="#{ucontrole.id}" id="id" />
+                
+                <p:outputLabel value="User Name" for="un" />
+                <p:inputText value="#{ucontrole.userName}" id="un" />
+                
+                <p:outputLabel value="name" for="name" />
+                <p:inputText value="#{ucontrole.name}" id="name" />
+                
+            </p:panelGrid>  
+            
+            <p:panelGrid columns="2" >
+                <p:commandButton value="Ajouter" action="#{ucontrole.insert()}" update="eventsDT msg" />
+                <p:commandButton value="Supprimer" action="#{ucontrole.delete()}" update="eventsDT msg" />
+            </p:panelGrid>
+            
+          <p:growl id="msg" />  
+          <p:panel>
+              
+              
+              
+            
+              <p:dataTable id="eventsDT" var="user" value="#{ucontrole.listUser}" selectionMode="single"  rowKey="#{user.id}">
+                <p:ajax event="rowSelect" listener="#{ucontrole.onRowSelect}" update=":form:msg :form:toPost" />
+                <p:column headerText="Id">
+                    <h:outputText value="#{user.id}" />
+                </p:column>
+                <p:column headerText="Name">
+                    <h:outputText value="#{user.name}" />
+                </p:column>
+                <p:column headerText="User Name">
+                    <h:outputText value="#{user.username}" />
+                </p:column>
+            </p:dataTable>
+            
+        </p:panel>  
+        </h:form>
+        
+     
+    </h:body>
+</html>
+
