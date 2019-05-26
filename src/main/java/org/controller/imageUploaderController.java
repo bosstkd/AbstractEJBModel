@@ -27,21 +27,25 @@ public class imageUploaderController {
     public void setFile(UploadedFile file) {
         this.file = file;
     }
-     /*
-    public void upload() {
-        if(file != null) {
-            FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
-    }
-     */
+    
     public void handleFileUpload(FileUploadEvent event) throws IOException {
         file = event.getFile();
         
      
         imageUpAPI IUA = new imageUpAPI();
-        IUA.primeFacesPhotoReceiver(500, 500, file, "\\test\\", "", "test");
+        IUA.primeFacesImageReceiver(500, 500, file, "\\test\\", "", "test");
        
+        FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
+     public void handleMultipleFileUpload(FileUploadEvent event) throws IOException {
+         
+        file = event.getFile();
+        imageUpAPI IUA = new imageUpAPI();
+        IUA.primeFacesMultiImageReceiver(500, 500, file, "\\test\\multiGet\\", "");
+         
+         
         FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

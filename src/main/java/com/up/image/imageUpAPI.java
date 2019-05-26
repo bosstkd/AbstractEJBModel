@@ -65,7 +65,7 @@ public String getRandomImageChooser(String relativeWebPath){
 } 
 
 // Creation de chemin
-public boolean createDirectory (String relativeWebPath){
+private boolean createDirectory (String relativeWebPath){
     File files = new File(relativeWebPath);
         if (!files.exists()) {
             if (files.mkdirs()) {
@@ -75,6 +75,21 @@ public boolean createDirectory (String relativeWebPath){
     return false;
 }
 
+
+public int getNextImageNumberName(String relativeWebPath){
+    List<String> lstImgName = getDirectoryImagesListName(relativeWebPath);
+    List<Integer> lstIntName = new ArrayList<Integer>();
+    int x = 1;
+    for(String str : lstImgName){
+        str = str.substring(str.length(), str.length()-4);
+        try {
+            x = Integer.parseInt(str);
+            lstIntName.add(x);
+        } catch (Exception e) { }
+    }
+    return numManquantOrNextInt(lstIntName);
+}
+//---------------------------------------------------------------------
 
 // Changement de la taille d'image extraction sous le meme répertoire avec la mention _RS
 public boolean imageResizer(int XDimention, int YDimention, String outFormat, File fs) {
@@ -175,9 +190,10 @@ public boolean imageListResizer(int XDimention, int YDimention, String outFormat
 	}
 }
 
-//-----------------
+//----------------------------------------------------------------------
+
 // ne fonctionne que pour JSF {réception d'image recherche du dossier resources ou target(pour maven) creation d'un sous répertoire et changement et sauvegarde d'image}.
-public void primeFacesPhotoReceiver(int XDimention, int YDimention, UploadedFile file, String imageDirectory, String resourcePath, String imageName) throws IOException{
+public void primeFacesImageReceiver(int XDimention, int YDimention, UploadedFile file, String imageDirectory, String resourcePath, String imageName) throws IOException{
         
            InputStream InPtStream = file.getInputstream(); 
            String relativeWebPath = getResourcePathJsf(resourcePath);
@@ -186,6 +202,49 @@ public void primeFacesPhotoReceiver(int XDimention, int YDimention, UploadedFile
            createDirectory(relativeWebPath);
            System.out.println("2: "+relativeWebPath);
 
+            OutputStream OtPtStream = new FileOutputStream(new File(relativeWebPath+"\\"+imageName+".jpg"));
+            
+            String imageURL = relativeWebPath+"\\"+imageName+".jpg";
+            
+            int read = 0;
+		byte[] bytes = new byte[1024];
+
+		while ((read = InPtStream.read(bytes)) != -1) {
+			OtPtStream.write(bytes, 0, read);
+		}
+           
+     
+		if (InPtStream != null) {
+			try {
+				InPtStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (OtPtStream != null) {
+			try {
+				OtPtStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	
+            File fs = new File(imageURL);
+            
+            imageResizer(XDimention, YDimention, IMAGE_TYPE_JPEG, fs, imageName);
+}
+
+// ne fonctionne que pour JSF {réception d'image recherche du dossier resources ou target(pour maven) creation d'un sous répertoire et changement et sauvegarde d'image}.
+public void primeFacesMultiImageReceiver(int XDimention, int YDimention, UploadedFile file, String imageDirectory, String resourcePath) throws IOException{
+        
+           InputStream InPtStream = file.getInputstream(); 
+           String relativeWebPath = getResourcePathJsf(resourcePath);
+          
+           relativeWebPath = relativeWebPath+"\\"+imageDirectory;
+           createDirectory(relativeWebPath);
+           System.out.println("2: "+relativeWebPath);
+           String imageName = ""+getNextImageNumberName(relativeWebPath);
+           
             OutputStream OtPtStream = new FileOutputStream(new File(relativeWebPath+"\\"+imageName+".jpg"));
             
             String imageURL = relativeWebPath+"\\"+imageName+".jpg";
@@ -227,5 +286,83 @@ public String getResourcePathJsf(String resourcePath){
 
 
 
+//--------------------------------------------------------
+
+/*
+public static void main (String args[]){
+   imageUpAPI UAP = new imageUpAPI();
+   List <Integer> lstint = new ArrayList<Integer>();
+    lstint.add(1);
+    lstint.add(5);
+    lstint.add(7);
+    lstint.add(2);
+    lstint.add(3);
+   System.out.println(UAP.numManquantOrNextInt(lstint));
+}
+*/
+
+private int numManquantOrNextInt(List<Integer> lstint){
+    List <Integer> lstIntOr = intListOrder(lstint);
+    int n = 1;
+    for(int i = 0; i<lstIntOr.size(); i++){
+        n = lstIntOr.get(i);
+        if(n != i+1){
+            return i+1;
+        }
+    }
+    return n;
+}
+
+private List<Integer> intListOrder(List<Integer> lstInt){
+     List<Integer> lstIntOrd = new ArrayList<Integer>();
+      while (lstInt.size()>0){
+          interneObj obj = petitElmListInteger(lstInt);
+          lstIntOrd.add(obj.valeur);
+          lstInt.remove(obj.index);
+      }
+     return lstIntOrd;
+}
+
+private interneObj petitElmListInteger(List<Integer> lstInt){
+    int x  = 2147483647;
+    int y  = 0;
+    int ind= 0;
+    interneObj obj = new interneObj();
+    if(lstInt.isEmpty()){
+        obj.setIndex(0);
+        obj.setValeur(1);
+     
+    }else{
+        for(int i:lstInt){
+                            if(x>i){ x = i; ind = y;}
+                            y++;       
+        }
+        obj.setIndex(ind);
+        obj.setValeur(x);
+    }
+ 
+    return obj;
+}
+
+class interneObj{
+    private int valeur;
+    private int index;
+
+        public int getValeur() {
+            return valeur;
+        }
+
+        public void setValeur(int valeur) {
+            this.valeur = valeur;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+}
 
 }
