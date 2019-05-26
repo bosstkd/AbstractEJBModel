@@ -47,8 +47,9 @@ public class userController {
     
 //-----------------------------------------    
     
+  @EJB
+  UserBean bean_A; 
   
-    
     @EJB  
     UserFacade bean_b;
     
@@ -87,6 +88,7 @@ public class userController {
 
     public List<User> getListUser() {
         listUser = bean_b.findAll();
+       // listUser = bean_A.trouve();
         return listUser;
     }
 
