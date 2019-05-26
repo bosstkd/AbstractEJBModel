@@ -9,24 +9,20 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Amine
+ * @author administrateur
  */
 @Entity
-@Table(name = "user", catalog = "monHotel", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"USERNAME"})})
+@Table(name = "user", catalog = "jlvljuzg_monhotel", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u")
@@ -37,19 +33,19 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(name = "ID", nullable = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 32)
-    @Column(name = "USERNAME", nullable = false, length = 32)
+    @Size(min = 1, max = 60)
+    @Column(name = "USERNAME", nullable = false, length = 60)
     private String username;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "NAME", nullable = false, length = 64)
+    @Size(min = 1, max = 60)
+    @Column(name = "NAME", nullable = false, length = 60)
     private String name;
 
     public User() {
