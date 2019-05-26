@@ -17,8 +17,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import org.primefaces.model.UploadedFile;
@@ -29,11 +27,13 @@ import org.primefaces.model.UploadedFile;
  */
 public class imageUpAPI {
     
+    // Format D'image
+    
         public final  String IMAGE_TYPE_JPEG = "jpg";
 	public final  String IMAGE_TYPE_GIF = "gif";
 	public final  String IMAGE_TYPE_PNG = "png";    
         
-       
+// Liste des images dans un répertoire       
 public List<String> getDirectoryImagesListName(String relativeWebPath){
        File folder = new File(relativeWebPath);
         File[] listOfFiles = folder.listFiles();
@@ -54,6 +54,7 @@ public List<String> getDirectoryImagesListName(String relativeWebPath){
         return lstImageName;
   }
 
+// Choix d'image au hazard dans un répertoire
 public String getRandomImageChooser(String relativeWebPath){
 
      List<String> lstFiles = getDirectoryImagesListName(relativeWebPath);
@@ -63,6 +64,7 @@ public String getRandomImageChooser(String relativeWebPath){
   return lstFiles.get(rand);                             
 } 
 
+// Creation de chemin
 public boolean createDirectory (String relativeWebPath){
     File files = new File(relativeWebPath);
         if (!files.exists()) {
@@ -72,7 +74,9 @@ public boolean createDirectory (String relativeWebPath){
         }
     return false;
 }
-//----------------- 	
+
+
+// Changement de la taille d'image extraction sous le meme répertoire avec la mention _RS
 public boolean imageResizer(int XDimention, int YDimention, String outFormat, File fs) {
                 Dimension dms = new Dimension(XDimention,YDimention);
                 BufferedImage buf;
@@ -94,6 +98,7 @@ public boolean imageResizer(int XDimention, int YDimention, String outFormat, Fi
 	}
 }
 
+// Changement de la taille d'image extraction sous le meme répertoire avec un nom différent
 public boolean imageResizer(int XDimention, int YDimention, String outFormat, File fs, String imageName) {
                 Dimension dms = new Dimension(XDimention,YDimention);
                 BufferedImage buf;
@@ -119,6 +124,7 @@ public boolean imageResizer(int XDimention, int YDimention, String outFormat, Fi
 	}
 }
 
+// Changement de la taille d'image extraction sous un répetoire différent avec un nom différent
 public boolean imageResizer(int XDimention, int YDimention, String outFormat, String inPutImagePath, String outPutDirectory, String imageName){
       Dimension dms = new Dimension(XDimention,YDimention);
                 BufferedImage buf;
@@ -139,15 +145,43 @@ public boolean imageResizer(int XDimention, int YDimention, String outFormat, St
             return false;
 	}
 }
+
+// Changement de la taille d'une liste images extraction sous le meme répertoire avec les nom (1, 2 ... nombre d'images)
+public boolean imageListResizer(int XDimention, int YDimention, String outFormat, File[] fs, String imageName) {
+                Dimension dms = new Dimension(XDimention,YDimention);
+                BufferedImage buf;
+		try {
+                    
+                    for(int i = 1 ; i<fs.length; i++ ){
+                        String ancImageName = fs[i].getName();
+                            System.out.println("ANC : "+ancImageName);
+                            String pictureName = fs[i].getAbsolutePath().substring(0,fs[i].getAbsolutePath().length()- ancImageName.length());
+
+
+                            pictureName = pictureName+"\\"+i+"."+outFormat;
+                            buf = ImageIO.read(new File(fs[i].getAbsolutePath()));
+                            BufferedImage bufFinal  = new BufferedImage(dms.width,dms.height, BufferedImage.TYPE_INT_RGB);
+                            Graphics2D g = (Graphics2D) bufFinal.getGraphics();
+                            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                            g.drawImage(buf, 0, 0, dms.width,dms.height, null);
+                            g.dispose();
+
+                        ImageIO.write(bufFinal, IMAGE_TYPE_PNG, new File(pictureName));
+                    }                    
+                return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+	}
+}
+
 //-----------------
+// ne fonctionne que pour JSF {réception d'image recherche du dossier resources ou target(pour maven) creation d'un sous répertoire et changement et sauvegarde d'image}.
 public void primeFacesPhotoReceiver(int XDimention, int YDimention, UploadedFile file, String imageDirectory, String resourcePath, String imageName) throws IOException{
         
-            InputStream InPtStream = file.getInputstream(); 
-           
-            
-           String relativeWebPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath(resourcePath);
-         
-           System.out.println("1: "+relativeWebPath);
+           InputStream InPtStream = file.getInputstream(); 
+           String relativeWebPath = getResourcePathJsf(resourcePath);
+          
            relativeWebPath = relativeWebPath+"\\"+imageDirectory;
            createDirectory(relativeWebPath);
            System.out.println("2: "+relativeWebPath);
@@ -184,8 +218,10 @@ public void primeFacesPhotoReceiver(int XDimention, int YDimention, UploadedFile
             imageResizer(XDimention, YDimention, IMAGE_TYPE_JPEG, fs, imageName);
 }
 
+
+// ne fonctionne que pour JSF récupération du chemin du fichier d'exécution.
 public String getResourcePathJsf(String resourcePath){
-    return new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath(resourcePath)).getPath();
+    return FacesContext.getCurrentInstance().getExternalContext().getRealPath(resourcePath);
 }
 
 
