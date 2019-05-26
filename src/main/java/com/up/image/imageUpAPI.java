@@ -81,7 +81,9 @@ public int getNextImageNumberName(String relativeWebPath){
     List<Integer> lstIntName = new ArrayList<Integer>();
     int x = 1;
     for(String str : lstImgName){
-        str = str.substring(str.length(), str.length()-4);
+        System.out.println("voila 1 : "+str);
+        str = str.substring(0, str.length()-4);
+        System.out.println("voila 2 : "+str);
         try {
             x = Integer.parseInt(str);
             lstIntName.add(x);
@@ -282,9 +284,6 @@ public void primeFacesMultiImageReceiver(int XDimention, int YDimention, Uploade
 public String getResourcePathJsf(String resourcePath){
     return FacesContext.getCurrentInstance().getExternalContext().getRealPath(resourcePath);
 }
-
-
-
 
 //--------------------------------------------------------
 
