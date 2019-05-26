@@ -46,10 +46,11 @@ public class userController {
     }
     
 //-----------------------------------------    
-    
+  /*  
   @EJB
   UserBean bean_A; 
-  
+  */
+    
     @EJB  
     UserFacade bean_b;
     
