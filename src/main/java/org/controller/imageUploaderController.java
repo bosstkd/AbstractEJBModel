@@ -39,6 +39,16 @@ public class imageUploaderController {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     
+    public void upload() throws IOException {
+        if(file != null) {
+            imageUpAPI IUA = new imageUpAPI();
+            IUA.primeFacesImageReceiver(500, 500, file, "\\test\\", "", "test");
+
+            FacesMessage msg = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
+    
      public void handleMultipleFileUpload(FileUploadEvent event) throws IOException {
          
         file = event.getFile();

@@ -30,6 +30,17 @@
                  
                  <p:growl id="messages" showDetail="true" />     
              </h:form>
+            
+             <h:form enctype="multipart/form-data">
+                <p:growl id="messages" showDetail="true" />
+                <br /> 
+                <p:fileUpload value="#{imageUploaderController.file}" mode="simple" skinSimple="true"/>
+
+               <br />
+
+               <p:commandButton value="Submit" ajax="false" action="#{imageUploaderController.upload()}" disabled="false" />
+         
+            </h:form>
         </h:body>
 
     </f:view>
